@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
+import '../../../../core/entity/user_entity.dart';
 import '../../../../core/errors/failure.dart';
-
-import '../entity/user_entity.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, UserEntity>> signInWithEmailPassword({
@@ -12,8 +11,7 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> sendPasswordResetEmail({
     required String email,
   });
-
-  Future<Either<Failure, void>> signOut();
-
-  Future<Either<Failure, UserEntity?>> getCurrentUser();
+  Future<Either<Failure, void>> resetPassword({
+    required String newPassword,
+  });
 }

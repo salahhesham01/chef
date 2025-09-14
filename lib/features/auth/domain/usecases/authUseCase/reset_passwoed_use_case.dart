@@ -12,17 +12,17 @@ class ResetPasswordUseCase extends UseCase<void, ResetParams> {
 
   @override
   Future<Either<Failure, void>> call(ResetParams params) {
-    return authRepository.sendPasswordResetEmail(email: params.email);
+    return authRepository.resetPassword(newPassword: params.password);
   }
 }
 
 class ResetParams extends Equatable {
-  final String email;
+  final String password;
 
   const ResetParams({
-    required this.email,
+    required this.password,
   });
 
   @override
-  List<Object?> get props => [email];
+  List<Object?> get props => [password];
 }

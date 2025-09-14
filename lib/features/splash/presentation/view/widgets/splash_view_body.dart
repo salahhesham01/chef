@@ -4,6 +4,9 @@ import 'package:chef/core/utils/assets/app_assets.dart';
 import 'package:chef/core/utils/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../../core/utils/function/services.dart';
 
 class SplashViewBody extends StatefulWidget {
   const SplashViewBody({super.key});
@@ -18,11 +21,14 @@ class _SplashViewBodyState extends State<SplashViewBody> {
     // TODO: implement initState
     super.initState();
     navigateToLang();
+    configDeepLink(context);
   }
 
   void navigateToLang() {
     Future.delayed(const Duration(seconds: 2), () {
-      GoRouter.of(context).pushReplacement(AppRoutes.kSingInView);
+      Supabase.instance.client.auth.currentUser != null
+          ? GoRouter.of(context).pushReplacement(AppRoutes.kHomeView)
+          : GoRouter.of(context).pushReplacement(AppRoutes.kSingInView);
     });
   }
 

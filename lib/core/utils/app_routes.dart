@@ -5,9 +5,11 @@ import 'package:chef/features/meal/presentation/view/meal_view.dart';
 import 'package:chef/features/meal/presentation/view/widgets/add_meal.dart';
 import 'package:chef/features/profile/presentation/view/change_password_view.dart';
 import 'package:chef/features/profile/presentation/view/edit_profile_view.dart';
+import 'package:chef/features/profile/presentation/view/profile_view.dart';
 import 'package:chef/features/profile/presentation/view/settings_view.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/views/widgets/new_password.dart';
 import '../../features/splash/presentation/view/splash_view.dart';
 
 abstract class AppRoutes {
@@ -19,6 +21,8 @@ abstract class AppRoutes {
   static const kSettingsView = '/settingsView';
   static const kChangePasswordView = '/changePasswordView';
   static const kAddMealView = '/addMealView';
+  static const kNewPassword = '/new-password';
+  static const kProfileView = '/profileView';
   static final GoRouter router = GoRouter(
     routes: <RouteBase>[
       GoRoute(
@@ -58,6 +62,10 @@ abstract class AppRoutes {
         },
       ),
       GoRoute(
+        path: kNewPassword,
+        builder: (context, state) => const NewPassword(),
+      ),
+      GoRoute(
         path: kSettingsView,
         builder: (context, state) {
           return const SettingsView();
@@ -73,6 +81,12 @@ abstract class AppRoutes {
         path: kAddMealView,
         builder: (context, state) {
           return const AddMeal();
+        },
+      ),
+      GoRoute(
+        path: kProfileView,
+        builder: (context, state) {
+          return const ProfileView();
         },
       ),
     ],

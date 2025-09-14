@@ -1,10 +1,9 @@
-import 'package:chef/features/profile/presentation/view/widgets/edit_profile_view_body.dart';
+import 'package:chef/constants.dart';
+import 'package:chef/features/auth/presentation/views/widgets/new_password.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../constants.dart';
-
-class EditProfileView extends StatelessWidget {
-  const EditProfileView({super.key});
+class NewPasswordView extends StatelessWidget {
+  const NewPasswordView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +11,12 @@ class EditProfileView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Edit Profile',
+            'New Password',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: primaryColor,
         ),
-        body: EditProfileViewBody(),
+        body: const NewPassword(),
       ),
     );
   }

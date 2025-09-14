@@ -1,28 +1,16 @@
 import 'package:chef/core/utils/text_style.dart';
 import 'package:chef/core/utils/widgets/custom_btn.dart';
+import 'package:chef/features/auth/presentation/views/sign_in_view.dart';
 import 'package:chef/features/auth/presentation/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/utils/assets/app_assets.dart';
-import '../../../../../core/utils/function/services.dart';
 import '../cubit/forgetPassword/forget_password_cubit.dart';
 import '../cubit/forgetPassword/forget_password_state.dart';
 
-class ForgetPasswordBody extends StatefulWidget {
-  const ForgetPasswordBody({super.key});
-
-  @override
-  State<ForgetPasswordBody> createState() => _ForgetPasswordBodyState();
-}
-
-class _ForgetPasswordBodyState extends State<ForgetPasswordBody> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    configDeepLink(context);
-  }
+class NewPassword extends StatelessWidget {
+  const NewPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +38,7 @@ class _ForgetPasswordBodyState extends State<ForgetPasswordBody> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
                   textAlign: TextAlign.center,
-                  'Enter Your mail and we will send you email to rest your password',
+                  'Create new password',
                   style: TextStyles.latoTextStyle36Bold
                       .copyWith(fontSize: 16, fontWeight: FontWeight.w400),
                 ),
@@ -74,35 +62,48 @@ class ForgetPasswordForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
       listener: (context, state) {
-        if (state is ForgetPasswordSuccess) {
+        if (state is NewPasswordSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Reset email sent!")),
+            const SnackBar(content: Text("Password changed!")),
           );
-        } else if (state is ForgetPasswordFailure) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const SignInView()));
+        } else if (state is NewPasswordFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
           );
         }
       },
       builder: (context, state) {
-        final cubit = context.read<ForgetPasswordCubit>();
+        ForgetPasswordCubit cubit = context.read<ForgetPasswordCubit>();
 
         return Form(
           child: Column(
             children: [
               CustomTextField(
-                hintText: 'E-mail',
-                onChanged: (email) {
-                  cubit.email = email;
+                hintText: 'New Password',
+                obscureText: cubit.obscureText,
+                onChanged: (password) => cubit.password = password,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Password is required";
+                  }
+                  return null;
                 },
+                suffixIcon: IconButton(
+                  onPressed: () => cubit.obscurePasswordText(),
+                  icon: Icon(cubit.obscureText
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                ),
               ),
               const SizedBox(height: 30),
-              state is ForgetPasswordLoading
+              state is NewPasswordLoading
                   ? const CircularProgressIndicator()
                   : CustomBtn(
-                      text: 'Send E-mail',
+                      text: 'Reset Password',
                       onPressed: () {
-                        cubit.sendResetEmail();
+                        cubit.resetPassword(cubit.password!);
                       },
                     ),
             ],

@@ -1,6 +1,6 @@
 import 'package:chef/core/errors/failure.dart';
 import 'package:chef/core/usecase/use_case.dart';
-import 'package:chef/features/auth/domain/repos/user_repo.dart';
+import 'package:chef/features/profile/domain/repo/user_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 

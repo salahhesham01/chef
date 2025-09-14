@@ -1,26 +1,21 @@
 import 'package:chef/core/errors/failure.dart';
-import 'package:chef/features/auth/data/models/user_model.dart';
-import 'package:chef/features/auth/domain/entity/user_entity.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:dartz/dartz.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/entity/user_entity.dart';
 import '../../domain/repos/auth_repo.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
-  final FirebaseAuth firebaseAuth;
-  final FirebaseFirestore fireStore;
+  final SupabaseClient supabase;
 
-  AuthRepositoryImpl({
-    required this.firebaseAuth,
-    required this.fireStore,
-  });
+  AuthRepositoryImpl({required this.supabase});
 
   Failure _mapException(Object e) {
-    if (e is FirebaseAuthException) {
-      return AuthFailure.fromFirebaseAuth(e);
-    } else if (e is FirebaseException) {
-      return FirestoreFailure.fromFirestore(e);
+    if (e is AuthException) {
+      return AuthFailure.fromSupabaseAuth(e);
+    } else if (e is PostgrestException) {
+      return DatabaseFailure.fromPostgrest(e);
     } else {
       return ServerFailure(e.toString());
     }
@@ -32,19 +27,25 @@ class AuthRepositoryImpl extends AuthRepository {
     required String password,
   }) async {
     try {
-      final credential = await firebaseAuth.signInWithEmailAndPassword(
+      final response = await supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      final doc =
-          await fireStore.collection("users").doc(credential.user!.uid).get();
-
-      if (!doc.exists) {
-        return left(const ServerFailure("User profile not found in Firestore"));
+      final user = response.user;
+      if (user == null) {
+        return left(const AuthFailure("Invalid login credentials"));
       }
 
-      return right(UserModel.fromDoc(doc));
+      // Just return a UserEntity from auth only (no users table)
+      final userEntity = UserEntity(
+        uId: user.id,
+        email: user.email ?? '',
+        name: user.userMetadata?['name'] ?? '', // optional
+        photoUrl: user.userMetadata?['photoUrl'] ?? '',
+      );
+
+      return right(userEntity);
     } catch (e) {
       return left(_mapException(e));
     }
@@ -55,7 +56,8 @@ class AuthRepositoryImpl extends AuthRepository {
     required String email,
   }) async {
     try {
-      await firebaseAuth.sendPasswordResetEmail(email: email);
+      await supabase.auth
+          .resetPasswordForEmail(email, redirectTo: 'xx://reset-password');
       return right(null);
     } catch (e) {
       return left(_mapException(e));
@@ -63,27 +65,21 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> signOut() async {
+  Future<Either<Failure, void>> resetPassword({
+    required String newPassword,
+  }) async {
     try {
-      await firebaseAuth.signOut();
-      return right(null);
+      final response = await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      if (response.user != null) {
+        return const Right(null);
+      } else {
+        return Left(ServerFailure("Failed to reset password"));
+      }
     } catch (e) {
-      return left(_mapException(e));
-    }
-  }
-
-  @override
-  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
-    try {
-      final user = firebaseAuth.currentUser;
-      if (user == null) return right(null);
-
-      final doc = await fireStore.collection("users").doc(user.uid).get();
-      if (!doc.exists) return right(null);
-
-      return right(UserModel.fromDoc(doc));
-    } catch (e) {
-      return left(_mapException(e));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

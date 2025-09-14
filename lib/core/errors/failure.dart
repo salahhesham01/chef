@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Base Failure class
 abstract class Failure {
@@ -15,19 +15,16 @@ class ServerFailure extends Failure {
 class AuthFailure extends Failure {
   const AuthFailure(super.msg);
 
-  factory AuthFailure.fromFirebaseAuth(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'invalid-email':
-        return const AuthFailure('The email address is badly formatted.');
-      case 'user-disabled':
-        return const AuthFailure('This user has been disabled.');
-      case 'user-not-found':
-        return const AuthFailure('No user found with this email.');
-      case 'wrong-password':
-        return const AuthFailure('Invalid password.');
-      case 'email-already-in-use':
+  factory AuthFailure.fromSupabaseAuth(AuthException e) {
+    final code = e.code?.toLowerCase(); // Supabase gives optional error codes
+    switch (code) {
+      case 'invalid_credentials':
+        return const AuthFailure('Invalid email or password.');
+      case 'email_exists':
         return const AuthFailure('This email is already registered.');
-      case 'weak-password':
+      case 'user_not_found':
+        return const AuthFailure('No user found with this email.');
+      case 'weak_password':
         return const AuthFailure('The password is too weak.');
       default:
         return AuthFailure(e.message ?? 'Unknown authentication error');
@@ -35,22 +32,22 @@ class AuthFailure extends Failure {
   }
 }
 
-/// Firestore / Database failures
-class FirestoreFailure extends Failure {
-  const FirestoreFailure(super.msg);
+/// Database / Postgres failures
+class DatabaseFailure extends Failure {
+  const DatabaseFailure(super.msg);
 
-  factory FirestoreFailure.fromFirestore(FirebaseException e) {
+  factory DatabaseFailure.fromPostgrest(PostgrestException e) {
     switch (e.code) {
-      case 'permission-denied':
-        return const FirestoreFailure(
+      case '42501': // insufficient_privilege
+        return const DatabaseFailure(
             'You do not have permission to access this resource.');
-      case 'unavailable':
-        return const FirestoreFailure(
-            'Firestore service is temporarily unavailable.');
-      case 'not-found':
-        return const FirestoreFailure('Requested document not found.');
+      case '42P01': // undefined_table
+        return const DatabaseFailure('Requested table or resource not found.');
+      case '40001': // serialization_failure
+        return const DatabaseFailure(
+            'Database transaction failed, please try again.');
       default:
-        return FirestoreFailure(e.message ?? 'Unknown Firestore error');
+        return DatabaseFailure(e.message ?? 'Unknown database error');
     }
   }
 }

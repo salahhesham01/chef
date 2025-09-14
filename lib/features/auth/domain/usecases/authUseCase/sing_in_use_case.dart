@@ -3,8 +3,8 @@ import 'package:chef/features/auth/domain/repos/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../../../core/entity/user_entity.dart';
 import '../../../../../core/errors/failure.dart';
-import '../../entity/user_entity.dart';
 
 class SignInUseCase extends UseCase<UserEntity, SignInParams> {
   final AuthRepository authRepository;
