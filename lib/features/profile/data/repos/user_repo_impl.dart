@@ -61,10 +61,9 @@ class UserRepoImpl extends UserRepo {
   }
 
   @override
-  Future<Either<Failure, String>> uploadProfileImage(
-      String userId, File file) async {
+  Future<Either<Failure, String>> uploadProfileImage(File file) async {
     try {
-      final url = await userRemoteDataSources.uploadProfileImage(userId, file);
+      final url = await userRemoteDataSources.uploadProfileImage(file);
       return right(url);
     } catch (e) {
       return failureException(e);
@@ -72,9 +71,9 @@ class UserRepoImpl extends UserRepo {
   }
 
   @override
-  Future<Either<Failure, String?>> getProfileImageUrl(String userId) async {
+  Future<Either<Failure, String?>> getProfileImageUrl() async {
     try {
-      final url = await userRemoteDataSources.getProfileImageUrl(userId);
+      final url = await userRemoteDataSources.getProfileImageUrl();
 
       // تأكد إن الـ url مش null
       final fixedUrl = (url != null && url.startsWith("sshttps"))

@@ -2,6 +2,10 @@ import 'package:chef/core/utils/app_routes.dart';
 import 'package:chef/features/auth/data/repos/auth_repo_impl.dart';
 import 'package:chef/features/auth/domain/usecases/authUseCase/send_reset_password_use_case.dart';
 import 'package:chef/features/auth/domain/usecases/authUseCase/sing_in_use_case.dart';
+import 'package:chef/features/meal/data/data_source/meal_remote_data_source.dart';
+import 'package:chef/features/meal/data/repo/meal_repo_impl.dart';
+import 'package:chef/features/meal/domain/use_case/add_meal_use_case.dart';
+import 'package:chef/features/meal/presentation/view/cubit/add_meal_cubit.dart';
 import 'package:chef/features/profile/data/data_sources/user_remote_data_sources.dart';
 import 'package:chef/features/profile/data/repos/user_repo_impl.dart';
 import 'package:chef/features/profile/domain/useCase/userUseCase/change_password_use_case.dart';
@@ -19,6 +23,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/domain/usecases/authUseCase/reset_passwoed_use_case.dart';
 import 'features/auth/presentation/views/cubit/forgetPassword/forget_password_cubit.dart';
 import 'features/auth/presentation/views/cubit/sign_in/sing_in_cubit.dart';
+import 'features/meal/domain/use_case/get_meal_use_case.dart';
+import 'features/meal/presentation/view/cubit/get_meal_cubit.dart';
 import 'features/profile/presentation/view/cubit/profile_imge_cubit.dart';
 
 Future<void> main() async {
@@ -62,7 +68,7 @@ class MyApp extends StatelessWidget {
               uploadProfileImageUseCase: UploadProfileImage(UserRepoImpl(
                   userRemoteDataSources: UserRemoteDataSourcesImpl(
                       supabase: Supabase.instance.client))))
-            ..getProfileImage(Supabase.instance.client.auth.currentUser!.id),
+            ..getProfileImage(),
         ),
         BlocProvider(
             create: (_) => EditCubit(
@@ -74,7 +80,14 @@ class MyApp extends StatelessWidget {
             create: (_) => ChangePasswordCubit(ChangePasswordUseCase(
                 UserRepoImpl(
                     userRemoteDataSources: UserRemoteDataSourcesImpl(
-                        supabase: Supabase.instance.client)))))
+                        supabase: Supabase.instance.client))))),
+        BlocProvider(
+            create: (_) => AddMealCubit(AddMealUseCase(MealRepoImpl(
+                MealRemoteDataSourceImpl(Supabase.instance.client))))),
+        BlocProvider(
+            create: (_) => GetMealCubit(GetMealUseCase(MealRepoImpl(
+                MealRemoteDataSourceImpl(Supabase.instance.client))))
+              ..getMeals()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

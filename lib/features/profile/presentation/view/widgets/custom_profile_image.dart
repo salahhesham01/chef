@@ -19,12 +19,10 @@ class CustomProfileImage extends StatelessWidget {
         // When a new image has been successfully picked...
         if (state is ProfileImagePicked) {
           // ...trigger the upload automatically.
-          final userId = Supabase.instance.client.auth.currentUser?.id;
-          if (userId != null) {
-            // No need for 'await' here unless you want to block the UI
-            // The cubit will handle emitting loading/success/failure states
-            context.read<ProfileImageCubit>().uploadProfileImage(userId);
-          }
+
+          // No need for 'await' here unless you want to block the UI
+          // The cubit will handle emitting loading/success/failure states
+          context.read<ProfileImageCubit>().uploadProfileImage();
         }
       },
       child: BlocBuilder<ProfileImageCubit, ProfileImageState>(

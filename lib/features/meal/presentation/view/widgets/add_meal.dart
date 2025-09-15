@@ -1,13 +1,16 @@
 import 'package:chef/core/utils/widgets/custom_btn.dart';
 import 'package:chef/features/auth/presentation/views/widgets/custom_text_field.dart';
-import 'package:chef/features/profile/presentation/view/widgets/custom_profile_image.dart';
+import 'package:chef/features/meal/presentation/view/cubit/add_meal_cubit.dart';
+import 'package:chef/features/meal/presentation/view/cubit/add_meal_state.dart';
+import 'package:chef/features/meal/presentation/view/cubit/get_meal_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../constants.dart';
 
 class AddMeal extends StatelessWidget {
-  const AddMeal({super.key});
-
+  AddMeal({super.key});
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -22,82 +25,105 @@ class AddMeal extends StatelessWidget {
             body: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      const CustomProfileImage(),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      CustomTextField(hintText: 'Name'),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      CustomTextField(hintText: 'Price'),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      CustomTextField(hintText: 'Category'),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      CustomTextField(hintText: 'Description'),
-                      const SizedBox(
-                        height: 33,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 23.0, left: 10),
-                        child: Row(
+                  child: BlocConsumer<AddMealCubit, AddMealState>(
+                    listener: (context, state) {
+                      if (state is AddMealFailure) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(state.msg)));
+                      } else if (state is AddMealSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Meal added")));
+                        context.read<GetMealCubit>().getMeals();
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    builder: (context, state) {
+                      final addMealCubit =
+                          BlocProvider.of<AddMealCubit>(context);
+                      return Form(
+                        key: _formKey,
+                        child: Column(
                           children: [
-                            RadioSelecter(
-                              text: "Number",
-                              group: "Number",
+                            CustomTextField(
+                              hintText: 'Name',
+                              onChanged: (value) {
+                                addMealCubit.name = value;
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Name is required';
+                                }
+                                return null;
+                              },
                             ),
-                            Spacer(),
-                            RadioSelecter(
-                              text: "Quantity",
-                              group: "Quantity",
-                            )
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            CustomTextField(
+                              hintText: 'Price',
+                              onChanged: (value) {
+                                addMealCubit.price = double.tryParse(value);
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Price is required';
+                                }
+                                if (double.tryParse(value) == null) {
+                                  return 'Price must be a number';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            CustomTextField(
+                              hintText: 'Category',
+                              onChanged: (value) {
+                                addMealCubit.category = value;
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Category is required';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            CustomTextField(
+                              hintText: 'Description',
+                              onChanged: (value) {
+                                addMealCubit.description = value;
+                              },
+                              validator: (value) {
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 33,
+                            ),
+                            state is AddMealLoading
+                                ? const CircularProgressIndicator()
+                                : CustomBtn(
+                                    text: 'Add Meal',
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        addMealCubit.addMeal();
+                                      }
+                                    },
+                                  ),
+                            const SizedBox(
+                              height: 11,
+                            ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 80,
-                      ),
-                      CustomBtn(text: 'Add Meal', onPressed: () {}),
-                      const SizedBox(
-                        height: 11,
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 )
               ],
             )));
-  }
-}
-
-class RadioSelecter extends StatelessWidget {
-  const RadioSelecter({
-    super.key,
-    required this.text,
-    required this.group,
-  });
-  final String text;
-  final String group;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Radio(
-          value: text,
-          groupValue: group,
-          activeColor: primaryColor,
-          onChanged: (String? value) {},
-        ),
-        const Text(
-          "Number",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-      ],
-    );
   }
 }

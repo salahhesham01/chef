@@ -14,6 +14,6 @@ abstract class UserRepo {
     required String newPassword,
   });
   Future<Either<Failure, void>> signOut();
-  Future<Either<Failure, String>> uploadProfileImage(String userId, File file);
-  Future<Either<Failure, String?>> getProfileImageUrl(String userId);
+  Future<Either<Failure, String>> uploadProfileImage( File file);
+  Future<Either<Failure, String?>> getProfileImageUrl();
 }

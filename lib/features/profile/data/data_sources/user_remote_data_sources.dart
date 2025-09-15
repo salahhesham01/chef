@@ -15,8 +15,8 @@ abstract class UserRemoteDataSources {
   });
   Future<void> signOut();
 
-  Future<String> uploadProfileImage(String userId, File file);
-  Future<String?> getProfileImageUrl(String userId);
+  Future<String> uploadProfileImage(File file);
+  Future<String?> getProfileImageUrl();
 }
 
 class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
@@ -83,7 +83,9 @@ class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
     await supabase.auth.signOut();
   }
 
-  Future<String> uploadProfileImage(String userId, File file) async {
+  @override
+  Future<String> uploadProfileImage(File file) async {
+    final userId = supabase.auth.currentUser?.id;
     final fileName =
         "$userId/profile_${DateTime.now().millisecondsSinceEpoch}.png";
 
@@ -97,17 +99,18 @@ class UserRemoteDataSourcesImpl extends UserRemoteDataSources {
 
     final url = await supabase.storage.from('images').getPublicUrl(fileName);
 
-    await supabase.from('users').update({'photoUrl': url}).eq('id', userId);
+    await supabase.from('users').update({'photoUrl': url}).eq('id', userId!);
 
     return url;
   }
 
   @override
-  Future<String?> getProfileImageUrl(String userId) async {
+  Future<String?> getProfileImageUrl() async {
+    final userId = supabase.auth.currentUser?.id;
     final response = await supabase
         .from('users')
         .select('photoUrl')
-        .eq('id', userId)
+        .eq('id', userId!)
         .maybeSingle();
 
     if (response == null) return null;

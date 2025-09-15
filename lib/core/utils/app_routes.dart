@@ -80,7 +80,7 @@ abstract class AppRoutes {
       GoRoute(
         path: kAddMealView,
         builder: (context, state) {
-          return const AddMeal();
+          return AddMeal();
         },
       ),
       GoRoute(

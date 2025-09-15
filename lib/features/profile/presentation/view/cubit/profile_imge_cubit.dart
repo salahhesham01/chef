@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../../core/usecase/use_case.dart';
 import '../../../domain/useCase/userUseCase/upload_profile_image.dart';
 import '../../../domain/useCase/userUseCase/get_profile_image_url.dart';
 import 'profile_imge_state.dart';
@@ -31,7 +32,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     }
   }
 
-  Future<void> uploadProfileImage(String userId) async {
+  Future<void> uploadProfileImage() async {
     if (selectedFile == null) {
       emit(ProfileImageFailure("No image selected"));
       return;
@@ -39,7 +40,7 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     emit(ProfileImageUploading());
 
     final result = await uploadProfileImageUseCase(
-      UploadProfileImageParams(userId: userId, filePath: selectedFile!.path),
+      UploadProfileImageParams(filePath: selectedFile!.path),
     );
 
     result.fold(
@@ -48,12 +49,10 @@ class ProfileImageCubit extends Cubit<ProfileImageState> {
     );
   }
 
-  Future<void> getProfileImage(String userId) async {
+  Future<void> getProfileImage() async {
     emit(ProfileImageFetching());
 
-    final result = await getProfileImageUrlUseCase(
-      GetProfileImageUrlParams(userId: userId),
-    );
+    final result = await getProfileImageUrlUseCase(NoParams());
 
     result.fold(
       (failure) => emit(ProfileImageFailure(failure.msg)),

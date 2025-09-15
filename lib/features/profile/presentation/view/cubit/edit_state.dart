@@ -1,4 +1,3 @@
-import 'package:chef/core/entity/user_entity.dart';
 import 'package:chef/features/profile/domain/entity/profile_entity.dart';
 
 abstract class EditState {}

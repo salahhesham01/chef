@@ -14,19 +14,17 @@ class UploadProfileImage extends UseCase<String, UploadProfileImageParams> {
 
   @override
   Future<Either<Failure, String>> call(UploadProfileImageParams params) {
-    return userRepo.uploadProfileImage(params.userId, File(params.filePath));
+    return userRepo.uploadProfileImage(File(params.filePath));
   }
 }
 
 class UploadProfileImageParams extends Equatable {
-  final String userId;
   final String filePath;
 
   const UploadProfileImageParams({
-    required this.userId,
     required this.filePath,
   });
 
   @override
-  List<Object?> get props => [userId, filePath];
+  List<Object?> get props => [filePath];
 }

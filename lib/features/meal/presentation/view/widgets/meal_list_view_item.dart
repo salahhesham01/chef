@@ -1,21 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../../core/utils/assets/app_assets.dart';
+import '../../../domain/entity/meal_entity.dart';
 
 class MealListViewItem extends StatelessWidget {
-  const MealListViewItem({super.key});
+  final MealEntity meal;
+
+  const MealListViewItem({super.key, required this.meal});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
       child: SizedBox(
         height: 100,
         child: Row(
           children: [
-            // Meal Image
-            // make it square
+            // Meal Image (دلوقتي ثابتة، بعدين ممكن تجيبها من Supabase)
             SizedBox(
               width: 60,
               height: 60,
@@ -31,31 +32,33 @@ class MealListViewItem extends StatelessWidget {
             ),
             const SizedBox(width: 16),
 
-            // Text + Input Column
-            const Expanded(
+            // Meal details
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Kitchen",
-                    style: TextStyle(
+                    meal.name,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 6),
-                  Text(
-                    "Checken hint",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
+                  if (meal.desc != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      meal.desc!,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 6),
+                  ],
+                  const SizedBox(height: 6),
                   Text(
-                    "200 LE",
-                    style: TextStyle(
+                    "${meal.price} LE",
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
                     ),
@@ -68,7 +71,9 @@ class MealListViewItem extends StatelessWidget {
 
             // Delete button
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                // TODO: استدعي deleteMealCubit
+              },
               child: Container(
                 width: 40,
                 height: 40,
