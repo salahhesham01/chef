@@ -1,4 +1,3 @@
-import 'package:chef/core/utils/app_routes.dart';
 import 'package:chef/core/utils/widgets/custom_btn.dart';
 import 'package:chef/features/auth/presentation/views/widgets/custom_text_field.dart';
 import 'package:chef/features/profile/presentation/view/cubit/edit_cubit.dart';
@@ -6,7 +5,6 @@ import 'package:chef/features/profile/presentation/view/cubit/edit_state.dart';
 import 'package:chef/features/profile/presentation/view/widgets/custom_profile_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../cubit/user_cubit.dart';

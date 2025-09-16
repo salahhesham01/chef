@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // 👈 add this
 import '../../../../../core/utils/assets/app_assets.dart';
 import '../../../domain/entity/meal_entity.dart';
+import '../cubit/delete_meal_cubit.dart';
+import '../cubit/get_meal_cubit.dart';
 
 class MealListViewItem extends StatelessWidget {
   final MealEntity meal;
@@ -45,10 +48,10 @@ class MealListViewItem extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  if (meal.desc != null) ...[
+                  ...[
                     const SizedBox(height: 6),
                     Text(
-                      meal.desc!,
+                      meal.desc,
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 14,
@@ -72,7 +75,7 @@ class MealListViewItem extends StatelessWidget {
             // Delete button
             GestureDetector(
               onTap: () {
-                // TODO: استدعي deleteMealCubit
+                context.read<DeleteMealCubit>().deleteMeal(meal.mealId!);
               },
               child: Container(
                 width: 40,

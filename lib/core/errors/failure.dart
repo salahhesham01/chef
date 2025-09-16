@@ -27,7 +27,7 @@ class AuthFailure extends Failure {
       case 'weak_password':
         return const AuthFailure('The password is too weak.');
       default:
-        return AuthFailure(e.message ?? 'Unknown authentication error');
+        return AuthFailure(e.message);
     }
   }
 }
@@ -47,7 +47,7 @@ class DatabaseFailure extends Failure {
         return const DatabaseFailure(
             'Database transaction failed, please try again.');
       default:
-        return DatabaseFailure(e.message ?? 'Unknown database error');
+        return DatabaseFailure(e.message);
     }
   }
 }

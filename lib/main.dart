@@ -5,7 +5,9 @@ import 'package:chef/features/auth/domain/usecases/authUseCase/sing_in_use_case.
 import 'package:chef/features/meal/data/data_source/meal_remote_data_source.dart';
 import 'package:chef/features/meal/data/repo/meal_repo_impl.dart';
 import 'package:chef/features/meal/domain/use_case/add_meal_use_case.dart';
+import 'package:chef/features/meal/domain/use_case/delete_meal_use_case.dart';
 import 'package:chef/features/meal/presentation/view/cubit/add_meal_cubit.dart';
+import 'package:chef/features/meal/presentation/view/cubit/delete_meal_cubit.dart';
 import 'package:chef/features/profile/data/data_sources/user_remote_data_sources.dart';
 import 'package:chef/features/profile/data/repos/user_repo_impl.dart';
 import 'package:chef/features/profile/domain/useCase/userUseCase/change_password_use_case.dart';
@@ -58,18 +60,15 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (_) => UserCubit(FetchUserUseCase(UserRepoImpl(
                 userRemoteDataSources: UserRemoteDataSourcesImpl(
-                    supabase: Supabase.instance.client))))
-              ..getUserData()),
+                    supabase: Supabase.instance.client))))),
         BlocProvider(
-          create: (_) => ProfileImageCubit(
-              getProfileImageUrlUseCase: GetProfileImageUrl(UserRepoImpl(
-                  userRemoteDataSources: UserRemoteDataSourcesImpl(
-                      supabase: Supabase.instance.client))),
-              uploadProfileImageUseCase: UploadProfileImage(UserRepoImpl(
-                  userRemoteDataSources: UserRemoteDataSourcesImpl(
-                      supabase: Supabase.instance.client))))
-            ..getProfileImage(),
-        ),
+            create: (_) => ProfileImageCubit(
+                getProfileImageUrlUseCase: GetProfileImageUrl(UserRepoImpl(
+                    userRemoteDataSources: UserRemoteDataSourcesImpl(
+                        supabase: Supabase.instance.client))),
+                uploadProfileImageUseCase: UploadProfileImage(UserRepoImpl(
+                    userRemoteDataSources: UserRemoteDataSourcesImpl(
+                        supabase: Supabase.instance.client))))),
         BlocProvider(
             create: (_) => EditCubit(
                   UpdateUserProfileUseCase(UserRepoImpl(
@@ -86,8 +85,10 @@ class MyApp extends StatelessWidget {
                 MealRemoteDataSourceImpl(Supabase.instance.client))))),
         BlocProvider(
             create: (_) => GetMealCubit(GetMealUseCase(MealRepoImpl(
-                MealRemoteDataSourceImpl(Supabase.instance.client))))
-              ..getMeals()),
+                MealRemoteDataSourceImpl(Supabase.instance.client))))),
+        BlocProvider(
+            create: (_) => DeleteMealCubit(DeleteMealUseCase(MealRepoImpl(
+                MealRemoteDataSourceImpl(Supabase.instance.client))))),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

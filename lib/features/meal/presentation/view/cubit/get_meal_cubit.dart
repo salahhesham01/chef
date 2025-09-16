@@ -17,4 +17,12 @@ class GetMealCubit extends Cubit<GetMealState> {
       (meals) => emit(GetMealSuccess(meals)),
     );
   }
+
+  void removeMeal(String mealId) {
+    if (state is GetMealSuccess) {
+      final meals = (state as GetMealSuccess).meals;
+      final updatedMeals = meals.where((m) => m.mealId != mealId).toList();
+      emit(GetMealSuccess(updatedMeals));
+    }
+  }
 }

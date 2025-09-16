@@ -44,6 +44,9 @@ class AddMeal extends StatelessWidget {
                         key: _formKey,
                         child: Column(
                           children: [
+                            const SizedBox(
+                              height: 50,
+                            ),
                             CustomTextField(
                               hintText: 'Name',
                               onChanged: (value) {
@@ -102,7 +105,7 @@ class AddMeal extends StatelessWidget {
                               },
                             ),
                             const SizedBox(
-                              height: 33,
+                              height: 50,
                             ),
                             state is AddMealLoading
                                 ? const CircularProgressIndicator()
